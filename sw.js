@@ -1,11 +1,11 @@
-const CACHE_NAME = 'talk-tea-cache-v1';
-// Adiciona todos os arquivos locais que compõem o "app shell"
+const CACHE_NAME = 'talk-tea-cache-v2'; // Versão do cache atualizada
+// Adiciona todos os arquivos locais que compõem o "app shell" e dependências críticas de CDN
 const urlsToCache = [
   '/',
   '/index.html',
-  '/index.tsx',
   '/manifest.webmanifest',
   '/icon.svg',
+  'https://cdn.tailwindcss.com'
 ];
 
 // Evento de instalação: armazena o app shell em cache

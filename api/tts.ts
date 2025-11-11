@@ -7,7 +7,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
-  // Vercel automatically parses the body for JSON requests
   const { text } = req.body;
 
   if (!text) {
@@ -24,14 +23,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-tts",
-      // Add a more natural and child-friendly voice prompt
-      contents: [{ parts: [{ text: `Diga com uma voz infantil, clara e amigável: ${text}` }] }],
+      contents: [{ parts: [{ text: text }] }],
       config: {
-        responseModalities: ['AUDIO'], // Use string literal for robustness
+        responseModalities: ['AUDIO'],
         speechConfig: {
           voiceConfig: {
-            // Using a different voice that might be more suitable for children
-            prebuiltVoiceConfig: { voiceName: 'Kore' }, 
+            // Switched to Charon as another stable voice option.
+            prebuiltVoiceConfig: { voiceName: 'Charon' }, 
           },
         },
       },
@@ -40,17 +38,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
     
     if (base64Audio) {
-      // Set cache headers to prevent unnecessary API calls for the same text
       res.setHeader('Cache-Control', 's-maxage=31536000, stale-while-revalidate');
       res.status(200).json({ audioContent: base64Audio });
     } else {
-      console.error("No audio data received from Gemini API.");
+      console.error("No audio data received from Gemini API. Full response:", JSON.stringify(response, null, 2));
       res.status(500).json({ error: 'Failed to generate audio from the API' });
     }
   } catch (error) {
-    // Log the actual error from the Gemini API for better debugging
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-    console.error("Error calling Gemini API:", errorMessage);
+    // Log the full error object for better debugging in Vercel logs
+    console.error("Error calling Gemini API:", error);
     res.status(500).json({ error: 'An error occurred while communicating with the Gemini API.' });
   }
 }
