@@ -1,0 +1,5 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="96" fill="#0284c7"/>
+  <path d="M408 128H104C90.7452 128 80 138.745 80 152V304C80 317.255 90.7452 328 104 328H160V384L248.889 328H408C421.255 328 432 317.255 432 304V152C432 138.745 421.255 128 408 128Z" fill="white"/>
+  <text x="256" y="235" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="96" font-weight="bold" fill="#0284c7">TEA</text>
+</svg>
