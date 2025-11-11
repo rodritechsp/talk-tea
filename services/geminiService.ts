@@ -1,5 +1,4 @@
 
-import { GoogleGenAI, Modality } from '@google/genai';
 
 // Base64 decoding function
 function decode(base64: string): Uint8Array {
@@ -44,28 +43,24 @@ function getAudioContext(): AudioContext {
 }
 
 export const textToSpeech = async (text: string): Promise<void> => {
-  if (!process.env.API_KEY) {
-    alert('API key for Gemini is not configured.');
-    return;
-  }
-
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-tts",
-      contents: [{ parts: [{ text: `Diga com uma voz infantil e amigável: ${text}` }] }],
-      config: {
-        responseModalities: [Modality.AUDIO],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Puck' }, // A friendly voice
-          },
-        },
+    const apiResponse = await fetch('/api/tts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({ text }),
     });
 
-    const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+    if (!apiResponse.ok) {
+      const errorData = await apiResponse.json().catch(() => ({}));
+      console.error(`Error from TTS service: ${apiResponse.statusText}`, errorData);
+      throw new Error('Failed to fetch audio from the server.');
+    }
+
+    const data = await apiResponse.json();
+    const base64Audio = data.audioContent;
+
     if (base64Audio) {
       const ctx = getAudioContext();
       const audioBytes = decode(base64Audio);
@@ -76,11 +71,11 @@ export const textToSpeech = async (text: string): Promise<void> => {
       source.connect(ctx.destination);
       source.start();
     } else {
-      console.error("No audio data received from API.");
+      console.error("No audio data received from our TTS service.");
       alert("Não foi possível gerar o áudio. Tente novamente.");
     }
   } catch (error) {
     console.error("Error generating speech:", error);
-    alert("Ocorreu um erro ao se comunicar com a API. Verifique o console para mais detalhes.");
+    alert("Ocorreu um erro ao se comunicar com o servidor. Verifique o console para mais detalhes.");
   }
 };
