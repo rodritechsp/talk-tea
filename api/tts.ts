@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { GoogleGenAI, Modality } from '@google/genai';
+import { GoogleGenAI } from '@google/genai';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -27,7 +27,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // Add a more natural and child-friendly voice prompt
       contents: [{ parts: [{ text: `Diga com uma voz infantil, clara e amigável: ${text}` }] }],
       config: {
-        responseModalities: [Modality.AUDIO],
+        responseModalities: ['AUDIO'], // Use string literal for robustness
         speechConfig: {
           voiceConfig: {
             // Using a different voice that might be more suitable for children
