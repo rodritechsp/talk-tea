@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { textToSpeech } from '../services/speechService';
+import { textToSpeech } from '../services/geminiService';
 import type { Category } from '../types';
 import { Card } from './Card';
 import { PlayCircleIcon, BackspaceIcon, TrashIcon } from './Icons';
